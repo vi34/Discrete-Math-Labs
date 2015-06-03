@@ -1,0 +1,18 @@
+3
+Gen
+Out
+hmm
+xabcdefGen 3:4,5 ho ho ho
+
+
+
+void printsuff(vertex* v)
+{
+    printf("\r\n", v->pchar);
+    while (v != root)
+    {
+        printf("%c", v->pchar + 'a');
+        v = v->parent;
+    }
+    printf("|");
+}

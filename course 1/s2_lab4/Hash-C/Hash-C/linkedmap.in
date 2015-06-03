@@ -1,0 +1,14 @@
+put zero a
+put one b
+put sec c
+delete sec
+put thir d
+next one
+prev thir
+next one
+next sec
+next AA
+put zzzzzzzzzzzzzzzzzzzz 2
+put zzzzzzzzzzzzzzzzzzzy 1
+prev zzzzzzzzzzzzzzzzzzzy
+next zzzzzzzzzzzzzzzzzzzz
