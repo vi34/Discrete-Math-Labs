@@ -1,0 +1,13 @@
+package ${name}
+public enum Token {
+    <% tokens.each { t -> %>
+    $t.name {
+            @Override
+            public String toString() {
+                return "${t.getFirstSymbols()}";
+            }
+        },
+    <% }%>
+    END;
+
+}
