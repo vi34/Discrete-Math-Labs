@@ -8,10 +8,22 @@ import java.util.Map;
  */
 public class ParseResult {
     private Map<String, Object> bindings = new HashMap<>();
-    public ArrayList<Terminal> tokens = new ArrayList<>();
+    public List<Terminal> tokens = new ArrayList<>();
+    public List<NonTerminal> nonTerms = new ArrayList<>();
+    Map<String, Symbol> rules = new HashMap<>();
 
     public Map<String, Object> getBindings () {
         return bindings;
+    }
+
+    void addToken(Terminal t) {
+        tokens.add(t);
+        rules.put(t.name, t);
+    }
+
+    void addNonTerm(NonTerminal nt) {
+        nonTerms.add(nt);
+        rules.put(nt.name, nt);
     }
 
     void setName(String name) {

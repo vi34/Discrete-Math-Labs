@@ -1,3 +1,6 @@
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by vi34 on 25/05/16.
  */
@@ -20,18 +23,23 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
 
     @Override
     public ParseResult visitLexRule(GenParser.LexRuleContext ctx) {
-        Terminal terminal = new Terminal();
+
         visitChildren(ctx);
-        terminal.name = ctx.LEXER_RULENAME().getText();
+        Terminal terminal = new Terminal(ctx.LEXER_RULENAME().getText());
         terminal.ranges = ctx.ranges;
         terminal.skip = ctx.isSkipped;
         terminal.literals = ctx.literals;
-        result.tokens.add(terminal);
+        result.addToken(terminal);
         return null;
     }
 
     @Override
-    public ParseResult visitLexExpr(GenParser.LexExprContext ctx) {
-        return super.visitLexExpr(ctx);
+    public ParseResult visitParseRule(GenParser.ParseRuleContext ctx) {
+        visitChildren(ctx);
+        NonTerminal nonTerminal = new NonTerminal();
+        nonTerminal.name = ctx.PARSER_RULENAME().getText();
+        nonTerminal.rules = ctx.alt;
+        result.addNonTerm(nonTerminal);
+        return null;
     }
 }

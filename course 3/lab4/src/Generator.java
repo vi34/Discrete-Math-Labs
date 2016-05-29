@@ -19,17 +19,17 @@ public class Generator {
     private static final String LEX_TEMPLATE = "templates/Lexer.tmpl";
     private static final String TOKENS_TEMPLATE = "templates/Token.tmpl";
     private static Path outDir;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Grammar grammar = Grammar.load("src/Gen.g4");
         LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/lab2"));
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         GenParser parser = new GenParser(tokens);
-        ParseResult result =  new Visitor().visit(parser.file());
+        ParseResult result = new Visitor().visit(parser.file());
         generate(result);
 
     }
 
-    public static void generate(ParseResult parseResult) {
+    public static void generate(ParseResult parseResult) throws Exception {
         outDir = Paths.get("result", parseResult.getName());
         if (Files.notExists(outDir)) {
             try {
@@ -38,8 +38,16 @@ public class Generator {
                 e.printStackTrace();
             }
         }
+        LLChecker checker = new LLChecker(parseResult.rules, parseResult.nonTerms,
+                parseResult.nonTerms.get(0).name);
+        if (!checker.isLL()) {
+            throw new Exception("Grammar is not LL");
+        }
+
         genTokens(parseResult);
         genLexer(parseResult);
+
+        parseResult.nonTerms.forEach(nt -> System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow));
     }
 
     private static void genLexer(ParseResult parseResult) {
