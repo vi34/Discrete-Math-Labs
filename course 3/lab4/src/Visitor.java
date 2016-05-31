@@ -1,5 +1,10 @@
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by vi34 on 25/05/16.
@@ -39,7 +44,47 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         NonTerminal nonTerminal = new NonTerminal();
         nonTerminal.name = ctx.PARSER_RULENAME().getText();
         nonTerminal.setRules(ctx.alt);
+        nonTerminal.setrInputs(ctx.ialt);
+        nonTerminal.setrInputs(nonTerminal.getrInputs().stream().map(l -> l.stream().map(s -> {
+            s = s.replace("$my", "node");
+            Pattern p = Pattern.compile("[$](.+?)\\.");
+            Matcher m = p.matcher(s);
+            StringBuffer sb = new StringBuffer();
+            while (m.find())
+                m.appendReplacement(sb, m.group(1).toLowerCase() + "T.");
+            m.appendTail(sb);
+            s = sb.toString();
+            return s;
+        }).collect(Collectors.toList())).collect(Collectors.toList()));
+
+        String ret = "";
+        if (ctx.re != null) {
+            ret = ctx.re.getText();
+            ret = ret.substring(2, ret.length() - 2);
+            ret = ret.replaceAll(",", ";");
+            ret += ";";
+        }
+        nonTerminal.ret = ret;
+
+        String arg = "";
+        if (ctx.arg != null) {
+            arg = ctx.arg.getText();
+            arg = arg.substring(1, arg.length() - 1);
+        }
+        nonTerminal.arg = arg;
         result.addNonTerm(nonTerminal);
+        return null;
+    }
+
+    @Override
+    public ParseResult visitTranslation(GenParser.TranslationContext ctx) {
+        visitChildren(ctx);
+        Translation translation = new Translation();
+        String h = ctx.BLOCK().toString();
+        h = h.substring(2, h.length() - 2);
+        translation.setActions(h);
+        translation.name = ctx.BLOCK().toString();
+        result.rules.put(translation.name, translation);
         return null;
     }
 
@@ -58,4 +103,5 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         result.setMembers(m.substring(2, m.length() - 2));
         return null;
     }
+
 }

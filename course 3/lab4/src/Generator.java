@@ -23,11 +23,11 @@ public class Generator {
     private static Path outDir;
     public static void main(String[] args) throws Exception {
         Grammar grammar = Grammar.load("src/Gen.g4");
-        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/lab2"));
+        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/arith"));
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         GenParser parser = new GenParser(tokens);
         ParseResult result = new Visitor().visit(parser.file());
-        generate(result, "e");
+        generate(result, "s");
 
     }
 
@@ -49,14 +49,16 @@ public class Generator {
         genFile(parseResult, parseResult.getName() + "Tree.java", TREE_TEMPLATE);
         genFile(parseResult, "Token.java", TOKENS_TEMPLATE);
         genFile(parseResult, parseResult.getName() + "Lexer.java", LEX_TEMPLATE); // TODO: more than one symbol tokens
-        genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE);
+        genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE); // TODO: same symbols in expression
 
         System.out.println(parseResult.getBindings().get("header"));
         parseResult.nonTerms.forEach(nt -> {
             System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow);
             for (int i = 0; i < nt.getRules().size(); ++i) {
                 System.out.printf("%1$20s: %2$s\n", nt.getRules().get(i), nt.ruleFirst.get(i));
+                System.out.printf("rINP: %1$20s: %2$s\n", nt.getrInputs().get(i), nt.ruleFirst.get(i));
             }
+            System.out.println();
         });
     }
 

@@ -50,5 +50,7 @@ public class ParseResult {
         bindings.put("tokens", tokens);
         bindings.put("nonTerms", nonTerms);
         bindings.put("rules", rules);
+        bindings.put("header", "");
+        bindings.put("members", "");
     }
 }

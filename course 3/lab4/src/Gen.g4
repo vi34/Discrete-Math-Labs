@@ -10,17 +10,26 @@ members: '@members' BLOCK;
 definition: lexRule
           | parseRule;
 
-parseRule locals [List<List<String>> alt = new ArrayList<>();]
-        : PARSER_RULENAME ':' parseExpr;
+parseRule locals [List<List<String>> alt, List<List<String>> ialt]
+        @init {$alt = new ArrayList<>(); $ialt = new ArrayList<>(); }
+        : PARSER_RULENAME (arg=ARGS)? ('returns' re=BLOCK)? ':' parseExpr;
 
-parseExpr locals [List<String> rules = new ArrayList<>();]
-        @init {$parseRule::alt.add($rules);}
-        : (ruleName {$rules.add($ruleName.text);})*
+
+parseExpr locals [List<String> rules, List<String> input]
+        @init {$rules = new ArrayList<>(); $input = new ArrayList<>();
+        $parseRule::alt.add($rules); $parseRule::ialt.add($input);}
+        : (ruleName {$rules.add($ruleName.rName); $input.add($ruleName.inp);})*
           ('|' parseExpr)?;
 
-ruleName
-    : LEXER_RULENAME
-    | PARSER_RULENAME;
+ruleName returns [String rName, String inp]
+@init {$inp = "";}
+    : LEXER_RULENAME {$rName = $LEXER_RULENAME.text;}
+        (ARGS {$inp = $ARGS.text; $inp = $inp.substring(1, $inp.length()-1);})?
+    | PARSER_RULENAME {$rName = $PARSER_RULENAME.text;}
+        (ARGS {$inp = $ARGS.text;$inp = $inp.substring(1, $inp.length()-1);})?
+    | translation {$rName = $translation.text;};
+
+translation: BLOCK;
 
 
 lexRule locals [List<String> literals, List<String> ranges, boolean isSkipped]
@@ -33,7 +42,8 @@ lexExpr
        | RANGE {$lexRule::ranges.add($RANGE.text);}('|' lexExpr)?;
 
 
-BLOCK: '*/' (.)+? '\\*' ;
+ARGS: '(' (.)+? ')';
+BLOCK: '*/' (.)+? '/*' ;
 RANGE: '['[A-Za-z0-9]'-'[A-Za-z0-9]']';
 LEXER_RULENAME: [A-Z]+;
 PARSER_RULENAME: [a-z][A-Za-z]*;

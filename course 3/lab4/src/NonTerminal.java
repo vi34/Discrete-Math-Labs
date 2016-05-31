@@ -8,15 +8,27 @@ import java.util.Set;
  */
 public class NonTerminal extends Symbol {
     private List<List<String>> rules;
+    private List<List<String>> rInputs;
     Set<Terminal> first;
     Set<Terminal> follow;
     List<Set<Terminal>> ruleFirst = new ArrayList<>();
+    String ret;
+    String arg;
 
 
     public void setRules(List<List<String>> rules) {
         this.rules = rules;
         rules.forEach((t) -> ruleFirst.add(new HashSet<>()));
     }
+
+    public void setrInputs(List<List<String>> rInputs) {
+        this.rInputs = rInputs;
+    }
+
+    public List<List<String>> getrInputs() {
+        return rInputs;
+    }
+
 
     public List<List<String>> getRules() {
         return rules;

@@ -11,22 +11,38 @@ public class ${name}Parser implements Parser {
     ${members}
     //
 
+    <% nonTerms.eachWithIndex { nt, ind1 -> %>
+    private class Tree_${nt.name} extends ${name}Tree {
+        Tree_${nt.name}(String node) {
+            super(node);
+        }
+        ${nt.ret}
+    }
 
-    <% nonTerms.eachWithIndex { nt, ind1 -> %>private ${name}Tree ${nt.name}() throws ParseException {
-        ${name}Tree node = new ${name}Tree("${nt.name}");
+    private Tree_${nt.name} ${nt.name}(${nt.arg}) throws ParseException {
+        Tree_${nt.name} node = new Tree_${nt.name}("${nt.name}");
         switch (lex.curToken) {<% nt.ruleFirst.eachWithIndex { set, ind -> if (set.count{t-> t.name.equals("EPS")} == 0) {%>
             <% set.each { el-> %>case ${el.name}:<% } %>
-                <%nt.rules.get(ind).collect{rules.get(it)}.each{ symb ->
+                <%nt.rules.get(ind).collect{rules.get(it)}.eachWithIndex{ symb, ind2 ->
+                    def sname = symb.name.toLowerCase();
                     if (symb instanceof Terminal) { %>
-                        String ${symb.name.toLowerCase()}S = lex.curToken.toString();
+                        String ${sname}S = lex.curToken.toString();
                         lex.nextToken();
-                        node.addChild(new ${name}Tree(${symb.name.toLowerCase()}S)); <% } else { %>
-                        node.addChild(${symb.name}()); <% } %>
+                        ${name}Tree ${sname}T = new ${name}Tree(${sname}S);
+                        node.addChild(${sname}T);
+                        <% } else if (symb instanceof NonTerminal) { %>
+                        Tree_${symb.name} ${sname}T = ${sname}(${nt.rInputs.get(ind).get(ind2)});
+                        node.addChild(${sname}T);
+                        <% } else { %> ${symb.actions} <% }%>
                <% } %> break;
         <% }} %>
         <% if (nt.ruleFirst.find{it.count{t-> t.name.equals("EPS")} != 0}) {%>
             <%nt.follow.each { follow -> %>case $follow:<% }%>
                 node.addChild(new ${name}Tree("EPS"));
+                <% nt.ruleFirst.eachWithIndex {set, ind->  if (set.find{t-> t.name.equals("EPS")}) {
+                 nt.rules.get(ind).collect{rules.get(it)}.eachWithIndex{ symb, ind2 -> %>
+                 ${symb.actions}
+                 <% } } } %>
                 break;
         <% }%>
             default:

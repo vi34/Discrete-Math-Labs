@@ -96,7 +96,7 @@ public class LLChecker {
                 for (List<String> rule: nt.getRules()) {
                     for (int i = 0; i < rule.size(); ++i) {
                         Symbol symbol = bind.get(rule.get(i));
-                        if (symbol instanceof Terminal)
+                        if (symbol instanceof Terminal || symbol instanceof Translation)
                             continue;
                         NonTerminal b = (NonTerminal) symbol;
                         Set<Terminal> first;
