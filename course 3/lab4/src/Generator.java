@@ -18,6 +18,8 @@ public class Generator {
     private static SimpleTemplateEngine engine = new SimpleTemplateEngine();
     private static final String LEX_TEMPLATE = "templates/Lexer.tmpl";
     private static final String TOKENS_TEMPLATE = "templates/Token.tmpl";
+    private static final String PARSER_TEMPLATE = "templates/Parser.tmpl";
+    private static final String TREE_TEMPLATE = "templates/Tree.tmpl";
     private static Path outDir;
     public static void main(String[] args) throws Exception {
         Grammar grammar = Grammar.load("src/Gen.g4");
@@ -25,11 +27,11 @@ public class Generator {
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         GenParser parser = new GenParser(tokens);
         ParseResult result = new Visitor().visit(parser.file());
-        generate(result);
+        generate(result, "e");
 
     }
 
-    public static void generate(ParseResult parseResult) throws Exception {
+    public static void generate(ParseResult parseResult, String startRule) throws Exception {
         outDir = Paths.get("result", parseResult.getName());
         if (Files.notExists(outDir)) {
             try {
@@ -38,25 +40,29 @@ public class Generator {
                 e.printStackTrace();
             }
         }
-        LLChecker checker = new LLChecker(parseResult.rules, parseResult.nonTerms,
-                parseResult.nonTerms.get(0).name);
+        LLChecker checker = new LLChecker(parseResult.rules, parseResult.nonTerms, startRule);
         if (!checker.isLL()) {
             throw new Exception("Grammar is not LL");
         }
 
-        genTokens(parseResult);
-        genLexer(parseResult);
+        parseResult.setStart(startRule);
+        genFile(parseResult, parseResult.getName() + "Tree.java", TREE_TEMPLATE);
+        genFile(parseResult, "Token.java", TOKENS_TEMPLATE);
+        genFile(parseResult, parseResult.getName() + "Lexer.java", LEX_TEMPLATE); // TODO: more than one symbol tokens
+        genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE);
 
-        parseResult.nonTerms.forEach(nt -> System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow));
+
+        parseResult.nonTerms.forEach(nt -> {
+            System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow);
+            for (int i = 0; i < nt.getRules().size(); ++i) {
+                System.out.printf("%1$20s: %2$s\n", nt.getRules().get(i), nt.ruleFirst.get(i));
+            }
+        });
     }
 
-    private static void genLexer(ParseResult parseResult) {
-        Path lexerFile = outDir.resolve(parseResult.getName() + "Lexer.java");
-        writeTemplate(lexerFile, Paths.get(LEX_TEMPLATE), parseResult.getBindings());
-    }
-
-    private static void genTokens(ParseResult parseResult) {
-        writeTemplate(outDir.resolve("Token.java"), Paths.get(TOKENS_TEMPLATE), parseResult.getBindings());
+    private static void genFile(ParseResult parseResult, String name, String template) {
+        Path outFile = outDir.resolve(name);
+        writeTemplate(outFile, Paths.get(template), parseResult.getBindings());
     }
 
     private static void writeTemplate(Path out, Path template, Map<String, Object> bindings) {

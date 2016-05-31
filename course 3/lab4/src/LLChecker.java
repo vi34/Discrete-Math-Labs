@@ -26,8 +26,8 @@ public class LLChecker {
         computeFirst();
         computeFollow();
         for (NonTerminal nt: nonTerminals) {
-            for (List<String> r1 : nt.rules) {
-                for (List<String> r2 : nt.rules){
+            for (List<String> r1 : nt.getRules()) {
+                for (List<String> r2 : nt.getRules()){
                     if (r1 == r2)
                         continue;
                     Set<Terminal> f1 = rightFirst(r1);
@@ -69,8 +69,10 @@ public class LLChecker {
         while (changed) {
             changed = false;
             for (NonTerminal nt : nonTerminals) {
-                for (List<String> rule: nt.rules) {
+                for (int i = 0; i < nt.getRules().size(); ++i) {
+                    List<String> rule = nt.getRules().get(i);
                     Set<Terminal> first = rightFirst(rule);
+                    nt.ruleFirst.set(i, first);
                     int sz = nt.first.size();
                     nt.first.addAll(first);
                     if (sz != nt.first.size()) {
@@ -91,7 +93,7 @@ public class LLChecker {
         while (changed) {
             changed = false;
             for (NonTerminal nt : nonTerminals) {
-                for (List<String> rule: nt.rules) {
+                for (List<String> rule: nt.getRules()) {
                     for (int i = 0; i < rule.size(); ++i) {
                         Symbol symbol = bind.get(rule.get(i));
                         if (symbol instanceof Terminal)

@@ -26,6 +26,8 @@ public class ParseResult {
         rules.put(nt.name, nt);
     }
 
+    void setStart(String start) { bindings.put("start", start);}
+
     void setName(String name) {
         bindings.put("name", name);
     }
@@ -36,5 +38,7 @@ public class ParseResult {
 
     ParseResult() {
         bindings.put("tokens", tokens);
+        bindings.put("nonTerms", nonTerms);
+        bindings.put("rules", rules);
     }
 }

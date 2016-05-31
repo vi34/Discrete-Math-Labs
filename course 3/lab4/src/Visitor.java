@@ -38,7 +38,7 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         visitChildren(ctx);
         NonTerminal nonTerminal = new NonTerminal();
         nonTerminal.name = ctx.PARSER_RULENAME().getText();
-        nonTerminal.rules = ctx.alt;
+        nonTerminal.setRules(ctx.alt);
         result.addNonTerm(nonTerminal);
         return null;
     }

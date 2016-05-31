@@ -1,50 +1,42 @@
-package ${name}
-public class ${name}Lexer {
-    InputStream is;
-    int curChar;
-    int curPos;
-    Token curToken;
+package ${name};
+import java.io.InputStream;
+import java.text.ParseException;
 
-    public ${name}Lexer (InputStream is) throws ParseException {
-        this.is = is;
-        curPos = 0;
-        nextChar();
-    }
+public class ${name}Parser {
+    ${name}Lexer lex;
 
-    private boolean isSkipped (int c) {
-        return <% print tokens.findAll{it.skip}.collect { t ->
-                            t.literals.collect{ lit -> "c == '$lit'"}.join(" || ")}.join(" || ")%>;
-    }
-
-    private void nextChar() throws ParseException {
-        curPos++;
-        try {
-            curChar = is.read();
-        } catch (IOException e) {
-            throw new ParseException (e.getMessage(), curPos);
-        }
-    }
-
-    public void nextToken() throws ParseException {
-        while (isSkipped(curChar)) {
-            nextChar();
-        }
-        switch (curChar) {
-            <% tokens.findAll{!it.skip}.each { t-> %>
-            <% t.getSymbols().each {symb -> %> case '${symb.charAt(0)}': <%}%>
-                nextChar();
-                curToken = Token.${t.name};
-                break;  <% } %>
-            case -1:
-                curToken = Token.END;
+    <% nonTerms.eachWithIndex { nt, ind1 -> %>private ${name}Tree ${nt.name}() throws ParseException {
+        ${name}Tree node = new ${name}Tree("${nt.name}");
+        switch (lex.curToken) {<% nt.ruleFirst.eachWithIndex { set, ind -> if (set.count{t-> t.name.equals("EPS")} == 0) {%>
+            <% set.each { el-> %>case ${el.name}:<% } %>
+                <%nt.rules.get(ind).collect{rules.get(it)}.each{ symb ->
+                    if (symb instanceof Terminal) { %>
+                        String ${symb.name.toLowerCase()}S = lex.curToken.toString();
+                        lex.nextToken();
+                        node.addChild(new ${name}Tree(${symb.name.toLowerCase()}S)); <% } else { %>
+                        node.addChild(${symb.name}()); <% } %>
+               <% } %> break;
+        <% }} %>
+        <% if (nt.ruleFirst.find{it.count{t-> t.name.equals("EPS")} != 0}) {%>
+            <%nt.follow.each { follow -> %>case $follow:<% }%>
+                node.addChild(new ${name}Tree("EPS"));
                 break;
-            default :
-                throw new ParseException ("Illegal character: " + (char)curChar, curPos);
+        <% }%>
+            default:
+                throw new ParseException("found: " + lex.curToken + " pos: " + (lex.curPos - 1), lex.curPos);
         }
+        return node;
     }
+    <% } %>
 
-    public Token curToken() {
-        return curToken;
+    public ${name}Tree parse(InputStream is) throws ParseException {
+        lex = new ${name}Lexer(is);
+        lex.nextToken();
+
+        ${name}Tree $start = $start();
+        if (lex.curToken == Token.END)
+            return $start;
+        else
+            throw new ParseException("expected end of expression, found: " + lex.curToken + " pos:" + (lex.curPos - 1), lex.curPos);
     }
-
 }

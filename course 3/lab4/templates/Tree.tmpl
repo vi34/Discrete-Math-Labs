@@ -1,0 +1,32 @@
+package ${name};
+import vi34.lib.Tree;
+import java.util.Arrays;
+import java.util.List;
+
+public class ${name}Tree implements Tree {
+    int id;
+    String node;
+    List<Tree> children;
+
+    public ${name}Tree(String node, Tree... children) {
+        this.children = Arrays.asList(children);
+        this.node = node;
+    }
+
+    public ${name}Tree(String node) {
+        this.node = node;
+    }
+
+    public List<Tree> getChildren() {
+        return children;
+    }
+
+    public void addChild(Tree t) {
+        children.add(t);
+    }
+
+    @Override
+    public String toString() {
+        return node;
+    }
+}
