@@ -1,8 +1,11 @@
 grammar Gen;
 
-file: name (definition ';')*;
+file: name header? members? (definition ';')*;
 
 name: 'grammar' IDENT ';';
+
+header: '@header' BLOCK;
+members: '@members' BLOCK;
 
 definition: lexRule
           | parseRule;
@@ -30,7 +33,7 @@ lexExpr
        | RANGE {$lexRule::ranges.add($RANGE.text);}('|' lexExpr)?;
 
 
-
+BLOCK: '*/' (.)+? '\\*' ;
 RANGE: '['[A-Za-z0-9]'-'[A-Za-z0-9]']';
 LEXER_RULENAME: [A-Z]+;
 PARSER_RULENAME: [a-z][A-Za-z]*;

@@ -4,10 +4,12 @@ public enum Token {
     $t.name {
             @Override
             public String toString() {
-                return "${t.getSymbols()}";
+                return s;
             }
         },
     <% }%>
     END;
+
+    String s = "";
 
 }

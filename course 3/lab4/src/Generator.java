@@ -51,7 +51,7 @@ public class Generator {
         genFile(parseResult, parseResult.getName() + "Lexer.java", LEX_TEMPLATE); // TODO: more than one symbol tokens
         genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE);
 
-
+        System.out.println(parseResult.getBindings().get("header"));
         parseResult.nonTerms.forEach(nt -> {
             System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow);
             for (int i = 0; i < nt.getRules().size(); ++i) {

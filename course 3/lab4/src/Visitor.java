@@ -42,4 +42,20 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         result.addNonTerm(nonTerminal);
         return null;
     }
+
+    @Override
+    public ParseResult visitHeader(GenParser.HeaderContext ctx) {
+        visitChildren(ctx);
+        String h = ctx.BLOCK().toString();
+        result.setHeader(h.substring(2, h.length() - 2));
+        return null;
+    }
+
+    @Override
+    public ParseResult visitMembers(GenParser.MembersContext ctx) {
+        visitChildren(ctx);
+        String m = ctx.BLOCK().toString();
+        result.setMembers(m.substring(2, m.length() - 2));
+        return null;
+    }
 }

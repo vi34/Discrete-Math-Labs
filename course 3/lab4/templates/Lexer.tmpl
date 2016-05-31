@@ -37,11 +37,14 @@ public class ${name}Lexer {
         switch (curChar) {
             <% tokens.findAll{!it.skip}.each { t-> %>
             <% t.getSymbols().each {symb -> %> case '${symb.charAt(0)}': <%}%>
-                nextChar();
                 curToken = Token.${t.name};
+                curToken.s = "";
+                curToken.s += (char)curChar;
+                nextChar();
                 break;  <% } %>
             case -1:
                 curToken = Token.END;
+                curToken.s = "\$";
                 break;
             default :
                 throw new ParseException ("Illegal character: " + (char)curChar, curPos);

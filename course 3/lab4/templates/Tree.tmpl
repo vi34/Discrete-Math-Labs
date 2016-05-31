@@ -2,6 +2,7 @@ package ${name};
 import vi34.lib.Tree;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ${name}Tree implements Tree {
     int id;
@@ -15,6 +16,7 @@ public class ${name}Tree implements Tree {
 
     public ${name}Tree(String node) {
         this.node = node;
+        this.children = new ArrayList<>();
     }
 
     public List<Tree> getChildren() {
@@ -23,6 +25,10 @@ public class ${name}Tree implements Tree {
 
     public void addChild(Tree t) {
         children.add(t);
+    }
+
+    public String getNode() {
+        return node;
     }
 
     @Override

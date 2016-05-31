@@ -1,9 +1,16 @@
 package ${name};
 import java.io.InputStream;
 import java.text.ParseException;
+import vi34.lib.Parser;
+${header}
 
-public class ${name}Parser {
+public class ${name}Parser implements Parser {
     ${name}Lexer lex;
+
+    //user members:
+    ${members}
+    //
+
 
     <% nonTerms.eachWithIndex { nt, ind1 -> %>private ${name}Tree ${nt.name}() throws ParseException {
         ${name}Tree node = new ${name}Tree("${nt.name}");

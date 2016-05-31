@@ -26,7 +26,17 @@ public class ParseResult {
         rules.put(nt.name, nt);
     }
 
-    void setStart(String start) { bindings.put("start", start);}
+    void setHeader(String header) {
+        bindings.put("header", header);
+    }
+
+    void setMembers(String members) {
+        bindings.put("members", members);
+    }
+
+    void setStart(String start) {
+        bindings.put("start", start);
+    }
 
     void setName(String name) {
         bindings.put("name", name);

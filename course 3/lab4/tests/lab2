@@ -1,5 +1,13 @@
 grammar Postfix;
 
+@header */
+  import java.io.PrintStream;
+\*
+
+@members */
+    static PrintStream out;
+\*
+
 e: NUM r;
 
 r :
