@@ -32,19 +32,19 @@ ruleName returns [String rName, String inp]
 translation: BLOCK;
 
 
-lexRule locals [List<String> literals, List<String> ranges, boolean isSkipped]
-    @init {$literals = new ArrayList<>(); $ranges = new ArrayList<>();}
+lexRule locals [List<String> literals, List<String> regs, boolean isSkipped]
+    @init {$literals = new ArrayList<>(); $regs = new ArrayList<>();}
     : LEXER_RULENAME ':' lexExpr ('->' 'skip' {$isSkipped = true;})?;
 
 lexExpr
        :
        | LITERAL {String s = $LITERAL.text; $lexRule::literals.add(s.substring(1, s.length() - 1));}('|' lexExpr)?
-       | RANGE {$lexRule::ranges.add($RANGE.text);}('|' lexExpr)?;
+       | REG {$lexRule::regs.add($REG.text);}('|' lexExpr)?;
 
 
 ARGS: '(' (.)+? ')';
 BLOCK: '*/' (.)+? '/*' ;
-RANGE: '['[A-Za-z0-9]'-'[A-Za-z0-9]']';
+REG: '"'(.)+?'"';
 LEXER_RULENAME: [A-Z]+;
 PARSER_RULENAME: [a-z][A-Za-z]*;
 LITERAL: '\'' (~'\'')* '\'';

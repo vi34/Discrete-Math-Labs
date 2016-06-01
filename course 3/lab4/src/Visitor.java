@@ -1,10 +1,6 @@
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by vi34 on 25/05/16.
@@ -31,7 +27,7 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
 
         visitChildren(ctx);
         Terminal terminal = new Terminal(ctx.LEXER_RULENAME().getText());
-        terminal.ranges = ctx.ranges;
+        terminal.regs = ctx.regs;
         terminal.skip = ctx.isSkipped;
         terminal.literals = ctx.literals;
         result.addToken(terminal);

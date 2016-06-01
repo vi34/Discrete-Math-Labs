@@ -1,7 +1,6 @@
 package vi34.lib;
 
 import Arith.ArithParser;
-import Arith.ArithTree;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
@@ -26,7 +25,7 @@ public class Main {
         parser = new ArithParser();
 
         try {
-            ArithTree res = (ArithTree) parser.parse(new FileInputStream("tests/input.txt"));
+            Tree res = parser.parse(new FileInputStream("tests/input.txt"));
             mxGraph graph = new mxGraph();
             Object parent = graph.getDefaultParent();
             createStyles(graph);

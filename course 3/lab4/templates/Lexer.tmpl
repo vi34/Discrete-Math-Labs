@@ -9,6 +9,17 @@ public class ${name}Lexer {
     int curChar;
     int curPos;
     Token curToken;
+    private StringBuilder sb = new StringBuilder();
+    private StringBuilder buffer = new StringBuilder();
+
+    private String[] literals = {"<%= allLiterals.join("\",\"") %>"};
+    private Token[] litTokens = {Token.<%= litTokens.join(",Token.") %>};
+    private String[] regs = {<%= allRegs.join(",") %>};
+    private Token[] regTokens = {<%if (regTokens.size()) print "Token."%><%= regTokens.join(",Token.") %>};
+    private int lastStrInd = -1;
+    private int lastMatchedInd = -1;
+    private boolean lastIsLit = true;
+
 
     public ${name}Lexer (InputStream is) throws ParseException {
         this.is = is;
@@ -24,31 +35,74 @@ public class ${name}Lexer {
     private void nextChar() throws ParseException {
         curPos++;
         try {
-            curChar = is.read();
+            if(buffer.length() > 0) {
+                curChar = buffer.charAt(0);
+                buffer.delete(0,1);
+            } else {
+                curChar = is.read();
+            }
         } catch (IOException e) {
             throw new ParseException (e.getMessage(), curPos);
         }
+    }
+
+    private boolean matches(String s) {
+        boolean res = false;
+        for (int i = 0; i < literals.length; ++i) {
+            if (literals[i].startsWith(s)) {
+                res = true;
+                if (literals[i].equals(s)) {
+                    lastMatchedInd = i;
+                    lastStrInd = s.length();
+                    lastIsLit = true;
+                    return res;
+                }
+            }
+        }
+        for (int i = 0; i < regs.length; ++i) {
+            if (s.matches(regs[i])) {
+                res = true;
+                lastMatchedInd = i;
+                lastStrInd = s.length();
+                lastIsLit = false;
+                return res;
+            }
+        }
+        return res;
     }
 
     public void nextToken() throws ParseException {
         while (isSkipped(curChar)) {
             nextChar();
         }
-        switch (curChar) {
-            <% tokens.findAll{!it.skip}.each { t-> %>
-            <% t.getSymbols().each {symb -> %> case '${symb.charAt(0)}': <%}%>
-                curToken = Token.${t.name};
-                curToken.s = "";
-                curToken.s += (char)curChar;
-                nextChar();
-                break;  <% } %>
-            case -1:
-                curToken = Token.END;
-                curToken.s = "\$";
-                break;
-            default :
-                throw new ParseException ("Illegal character: " + (char)curChar, curPos);
+        sb.setLength(0);
+        sb.append((char)curChar);
+        lastStrInd = -1;
+
+        if (curChar == -1 /* ^_^ */ || curChar == 65535) {
+            curToken = Token.END;
+            curToken.s = "\$";
+            return;
         }
+
+        while (matches(sb.toString())) {
+           nextChar();
+           sb.append((char)curChar);
+        }
+        if (lastStrInd == -1) {
+            throw new ParseException ("Illegal character: " + (char)curChar + "Pos:" + curPos, curPos);
+        } else {
+            if (lastIsLit) {
+                curToken = litTokens[lastMatchedInd];
+            } else {
+                curToken = regTokens[lastMatchedInd];
+            }
+            curToken.s = sb.substring(0, lastStrInd);
+            buffer.insert(0, sb.substring(lastStrInd, sb.length()));
+            curPos -= (sb.length() - lastStrInd);
+            nextChar();
+        }
+
     }
 
     public Token curToken() {

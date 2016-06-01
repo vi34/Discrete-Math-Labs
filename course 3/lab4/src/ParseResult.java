@@ -11,8 +11,13 @@ public class ParseResult {
     public List<Terminal> tokens = new ArrayList<>();
     public List<NonTerminal> nonTerms = new ArrayList<>();
     Map<String, Symbol> rules = new HashMap<>();
+    List<Terminal> litTokens = new ArrayList<>();
+    List<String> allLiterals = new ArrayList<>();
+    List<Terminal> regTokens = new ArrayList<>();
+    List<String> allRegs = new ArrayList<>();
 
     public Map<String, Object> getBindings () {
+        initRegsAndLiterals();
         return bindings;
     }
 
@@ -24,6 +29,28 @@ public class ParseResult {
     void addNonTerm(NonTerminal nt) {
         nonTerms.add(nt);
         rules.put(nt.name, nt);
+    }
+
+    public void initRegsAndLiterals() {
+        allLiterals = new ArrayList<>();
+        litTokens = new ArrayList<>();
+        regTokens = new ArrayList<>();
+        allRegs = new ArrayList<>();
+        tokens.forEach(t-> {
+            t.literals.forEach(lit -> {
+                allLiterals.add(lit);
+                litTokens.add(t);
+            });
+            t.regs.forEach(reg -> {
+                allRegs.add(reg);
+                regTokens.add(t);
+            });
+        });
+
+        bindings.put("allRegs", allRegs);
+        bindings.put("regTokens", regTokens);
+        bindings.put("allLiterals", allLiterals);
+        bindings.put("litTokens", litTokens);
     }
 
     void setHeader(String header) {
@@ -52,5 +79,8 @@ public class ParseResult {
         bindings.put("rules", rules);
         bindings.put("header", "");
         bindings.put("members", "");
+        bindings.put("litTokens", litTokens);
+
+
     }
 }

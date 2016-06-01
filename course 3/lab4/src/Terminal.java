@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class Terminal extends Symbol {
     List<String> literals = new ArrayList<>();
-    List<String> ranges = new ArrayList<>();
+    List<String> regs = new ArrayList<>();
     private Set<Terminal> first;
     boolean skip;
 
@@ -20,8 +20,8 @@ public class Terminal extends Symbol {
 
     public List<String> getSymbols() {
         List<String> res = new ArrayList<>();
-        literals.forEach((l) -> {res.add(l);});
-        ranges.stream().map(s -> s.substring(1, s.length() - 1)).forEach(s -> {
+        literals.forEach(res::add);
+        regs.stream().map(s -> s.substring(1, s.length() - 1)).forEach(s -> {
             for (char c = s.charAt(0); c <= s.charAt(s.length() - 1); ++c) {
                 res.add("" + c);
             }});
@@ -37,14 +37,14 @@ public class Terminal extends Symbol {
 
         if (skip != terminal.skip) return false;
         if (literals != null ? !literals.equals(terminal.literals) : terminal.literals != null) return false;
-        return ranges != null ? ranges.equals(terminal.ranges) : terminal.ranges == null;
+        return regs != null ? regs.equals(terminal.regs) : terminal.regs == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = literals != null ? literals.hashCode() : 0;
-        result = 31 * result + (ranges != null ? ranges.hashCode() : 0);
+        result = 31 * result + (regs != null ? regs.hashCode() : 0);
         result = 31 * result + (skip ? 1 : 0);
         return result;
     }
