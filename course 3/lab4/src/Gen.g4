@@ -12,7 +12,7 @@ definition: lexRule
 
 parseRule locals [List<List<String>> alt, List<List<String>> ialt]
         @init {$alt = new ArrayList<>(); $ialt = new ArrayList<>(); }
-        : PARSER_RULENAME (arg=ARGS)? ('returns' re=BLOCK)? ':' parseExpr;
+        : PARSER_RULENAME (arg=ARGS)? ('returns' re=ARGS)? ':' parseExpr;
 
 
 parseExpr locals [List<String> rules, List<String> input]

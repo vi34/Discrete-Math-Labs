@@ -2,23 +2,23 @@ grammar Arith;
 
 s: e */System.out.println("Result: " + $e.val);/*;
 
-e returns */int val/*
-    : t ec($t.val) */ $my.val = $ec.val; /*;
+e returns (int val)
+    : t ec($t.val) */ $this.val = $ec.val; /*;
 
-ec (int acc) returns */int val/*
-    : */ $my.val = acc; /*
-    | ADD t ec($t.val + acc) */$my.val = $ec.val;/*;
+ec (int acc) returns (int val)
+    : */ $this.val = acc; /*
+    | ADD t ec($t.val + acc) */$this.val = $ec.val;/*;
 
-t returns */int val/*
-    : f tc($f.val) */ $my.val = $tc.val;/*;
+t returns (int val)
+    : f tc($f.val) */ $this.val = $tc.val;/*;
 
-tc (int acc) returns */int val/*
-    : */ $my.val = acc; /*
-    | MUL f tc($f.val * acc) */$my.val = $tc.val;/*;
+tc (int acc) returns (int val)
+    : */ $this.val = acc; /*
+    | MUL f tc($f.val * acc) */$this.val = $tc.val;/*;
 
-f returns */int val/*
-    : NUM */$my.val = Integer.valueOf($NUM.node);/*
-    | L e R */$my.val = $e.val; /*;
+f returns (int val)
+    : NUM */$this.val = Integer.valueOf($NUM.node);/*
+    | L e R */$this.val = $e.val; /*;
 
 L: '(';
 R: ')';

@@ -1,6 +1,5 @@
 package vi34.lib;
 
-import Arith.ArithParser;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
@@ -21,8 +20,8 @@ public class Main {
     static int cnt = 0;
     public static void main(String[] args) throws FileNotFoundException {
         Parser parser = null;
-        //parser = new PostfixParser();
-        parser = new ArithParser();
+        //parser = new Postfix.PostfixParser();
+        parser = new Arith.ArithParser();
 
         try {
             Tree res = parser.parse(new FileInputStream("tests/input.txt"));

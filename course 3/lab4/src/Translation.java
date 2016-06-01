@@ -17,7 +17,7 @@ public class Translation extends Symbol {
     }
 
     void setActions(String a) {
-        actions = a.replace("$my", "node");
+        actions = a.replace("$this", "node");
         Pattern p = Pattern.compile("[$](.+?)\\.");
         Matcher m = p.matcher(actions);
         StringBuffer s = new StringBuffer();

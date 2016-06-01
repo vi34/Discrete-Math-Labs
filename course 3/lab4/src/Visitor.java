@@ -42,7 +42,7 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         nonTerminal.setRules(ctx.alt);
         nonTerminal.setrInputs(ctx.ialt);
         nonTerminal.setrInputs(nonTerminal.getrInputs().stream().map(l -> l.stream().map(s -> {
-            s = s.replace("$my", "node");
+            s = s.replace("$this", "node");
             Pattern p = Pattern.compile("[$](.+?)\\.");
             Matcher m = p.matcher(s);
             StringBuffer sb = new StringBuffer();
@@ -56,7 +56,7 @@ public class Visitor extends GenBaseVisitor<ParseResult> {
         String ret = "";
         if (ctx.re != null) {
             ret = ctx.re.getText();
-            ret = ret.substring(2, ret.length() - 2);
+            ret = ret.substring(1, ret.length() - 1);
             ret = ret.replaceAll(",", ";");
             ret += ";";
         }
