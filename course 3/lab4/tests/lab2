@@ -8,6 +8,8 @@ grammar Postfix;
     static PrintStream out;
 /*
 
+s: e;
+
 e: NUM r;
 
 r :
@@ -18,7 +20,6 @@ rc : ADD r
    | SUB r
    | POW r;
 
-rule:  NUM;
 
 MUL: '*' | '/';
 ADD: '+';

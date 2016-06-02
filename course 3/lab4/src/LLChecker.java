@@ -32,8 +32,9 @@ public class LLChecker {
                         continue;
                     Set<Terminal> f1 = rightFirst(r1);
                     Set<Terminal> f2 = rightFirst(r2);
-                    f1.retainAll(f2);
-                    if (f1.size() > 0)
+                    Set<Terminal> tf = new HashSet<>(f1);
+                    tf.retainAll(f2);
+                    if (tf.size() > 0)
                         return false;
                     if (f1.contains(EPS)) {
                         f2.retainAll(nt.follow);

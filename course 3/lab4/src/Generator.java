@@ -23,7 +23,7 @@ public class Generator {
     private static Path outDir;
     public static void main(String[] args) throws Exception {
         Grammar grammar = Grammar.load("src/Gen.g4");
-        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/arith"));
+        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/lab2"));
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         GenParser parser = new GenParser(tokens);
         ParseResult result = new Visitor().visit(parser.file());
@@ -49,9 +49,8 @@ public class Generator {
         genFile(parseResult, parseResult.getName() + "Tree.java", TREE_TEMPLATE);
         genFile(parseResult, "Token.java", TOKENS_TEMPLATE);
         genFile(parseResult, parseResult.getName() + "Lexer.java", LEX_TEMPLATE);
-        genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE); // TODO: same symbols in expression
+        genFile(parseResult, parseResult.getName() + "Parser.java", PARSER_TEMPLATE);
 
-        System.out.println(parseResult.getBindings().get("header"));
         parseResult.nonTerms.forEach(nt -> {
             System.out.printf("%1$-4s: %2$-14s %3$14s\n", nt.name, nt.first,nt.follow);
             for (int i = 0; i < nt.getRules().size(); ++i) {

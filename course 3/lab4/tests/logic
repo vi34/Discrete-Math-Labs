@@ -1,0 +1,47 @@
+grammar Logic;
+
+s
+    : e */ System.out.println("Result: " + $e.val); /*
+    ;
+
+e returns (boolean val)
+    : t ec($t.val) */ $this.val = $ec.val; /*
+    ;
+
+ec (boolean acc) returns (boolean val)
+    : */ $this.val = acc; /*
+    | OR  t */ boolean tmpVal; boolean tmp = $t.val; tmp |= acc; tmpVal = tmp; /* ec(tmpVal) */ $this.val = $ec.val; /*
+    ;
+
+t returns (boolean val)
+    : f tc($f.val) */ $this.val = $tc.val; /*
+    ;
+
+tc (boolean acc) returns (boolean val)
+    : */ $this.val = acc; /*
+    | XOR f */ boolean tmpVal; boolean tmp = $f.val; tmp ^= acc; tmpVal = tmp; /* tc(tmpVal) */ $this.val = $tc.val; /*
+    ;
+
+f returns (boolean val)
+    : p fc($p.val) */ $this.val = $fc.val; /*
+    ;
+
+fc (boolean acc) returns (boolean val)
+    : */ $this.val = acc; /*
+    | AND p */boolean tmpVal; boolean tmp = $p.val; tmp &= acc; tmpVal = tmp; /* fc(tmpVal) */ $this.val = $fc.val; /*
+    ;
+
+p returns (boolean val)
+    : NUM */ $this.val = $NUM.node.equals("1")? true : false; /*
+    | L e R */ $this.val = $e.val; /*
+    | N p */ $this.val = !$p.val; /*
+    ;
+
+AND: '&';
+N: '!';
+R: ')';
+L: '(';
+XOR: '^';
+OR: '|';
+NUM: "[0-1]";
+WS: ' ' | '\t' | '\n' | '\r' -> skip;

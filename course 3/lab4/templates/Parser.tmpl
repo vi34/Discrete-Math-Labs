@@ -21,11 +21,13 @@ public class ${name}Parser implements Parser {
 
     private Tree_${nt.name} ${nt.name}(${nt.arg}) throws ParseException {
         Tree_${nt.name} node = new Tree_${nt.name}("${nt.name}");
-        <% nt.rules.each{r -> r.collect{rules.get(it)}
-        .findAll{it instanceof Terminal || it instanceof NonTerminal}.each{symb -> %>
+        <%Set distinct = [];
+         nt.rules.each{r -> r.each{distinct.add(it)}};
+         distinct.collect{r -> rules.get(r)}.findAll{it instanceof Terminal || it instanceof NonTerminal}.each{symb -> %>
+
          String ${symb.name.toLowerCase()}S;
          <%= (symb instanceof Terminal) ? "${name}Tree" : "Tree_${symb.name}"%> ${symb.name.toLowerCase()}T;
-         <%}}%>
+         <%}%>
         switch (lex.curToken) {<% nt.ruleFirst.eachWithIndex { set, ind -> if (set.count{t-> t.name.equals("EPS")} == 0) {%>
             <% set.each { el-> %>case ${el.name}:<% } %>
                 <%nt.rules.get(ind).collect{rules.get(it)}.eachWithIndex{ symb, ind2 ->
