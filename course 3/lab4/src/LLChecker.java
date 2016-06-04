@@ -22,7 +22,6 @@ public class LLChecker {
     }
 
     boolean isLL() {
-        // TODO: delete useless symbols
         computeFirst();
         computeFollow();
         for (NonTerminal nt: nonTerminals) {

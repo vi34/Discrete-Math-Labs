@@ -20,8 +20,8 @@ public class Main {
     static int cnt = 0;
     public static void main(String[] args) throws FileNotFoundException {
         Parser parser = null;
-        parser = new Postfix.PostfixParser();
-        //parser = new Arith.ArithParser();
+        //parser = new Postfix.PostfixParser();
+        parser = new Arith.ArithParser();
         //parser = new Logic.LogicParser();
 
         try {

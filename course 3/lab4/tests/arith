@@ -7,7 +7,8 @@ e returns (int val)
 
 ec (int acc) returns (int val)
     : */ $this.val = acc; /*
-    | ADD t ec($t.val + acc) */$this.val = $ec.val;/*;
+    | ADD t ec($t.val + acc) */$this.val = $ec.val;/*
+    | SUB t ec(acc - $t.val) */$this.val = $ec.val;/*;
 
 t returns (int val)
     : f tc($f.val) */ $this.val = $tc.val;/*;
@@ -17,6 +18,13 @@ tc (int acc) returns (int val)
     | MUL f tc($f.val * acc) */$this.val = $tc.val;/*;
 
 f returns (int val)
+    : p fc($p.val) */ $this.val = $fc.val;/*;
+
+fc (int acc) returns (int val)
+    : */ $this.val = acc; /*
+    | POW f */ $this.val = (int)Math.pow(acc, $f.val); /*;
+
+p returns (int val)
     : NUM */$this.val = Integer.valueOf($NUM.node);/*
     | L e R */$this.val = $e.val; /*;
 

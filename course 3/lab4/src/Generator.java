@@ -23,7 +23,7 @@ public class Generator {
     private static Path outDir;
     public static void main(String[] args) throws Exception {
         Grammar grammar = Grammar.load("src/Gen.g4");
-        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/lab2"));
+        LexerInterpreter lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream("tests/arith"));
         CommonTokenStream tokens = new CommonTokenStream(lexEngine);
         GenParser parser = new GenParser(tokens);
         ParseResult result = new Visitor().visit(parser.file());
